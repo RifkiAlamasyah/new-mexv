@@ -6,7 +6,7 @@
     <!-- Tampilkan pesan popup menggunakan JavaScript -->
 
     <div class="alert alert-success" role="alert">
-        <h1>Lu Berhasil Login Cok</h1>
+        <h1>Selamat datang <?= $user['username']?></h1>
     </div>
 <?php endif; ?>
 

@@ -12,8 +12,8 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
     <a class="navbar-brand" href="#">MEXV</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -21,24 +21,26 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <a class="nav-link <?= (current_url(true)->getPath() == '/index.php/') ? 'active' : '' ?>" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link <?= (current_url(true)->getPath() == '/index.php/login') ? 'active' : '' ?>" href="/login">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          <a class="nav-link <?= (current_url(true)->getPath() == '/our-product') ? 'active' : '' ?>" href="/our-product">Our Product</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
+<?php 
+var_dump(current_url(true)->getPath());
 
-	<header class="jumbotron jumbotron-fluid">
+?>
+
+
+	<!-- <header class="jumbotron jumbotron-fluid">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
@@ -46,7 +48,7 @@
 				</div>
 			</div>
 		</div>
-    </header>
+    </header> -->
     
     <?= $this->renderSection('content') ?>
 

@@ -71,4 +71,50 @@ class UserController extends BaseController
         // Redirect ke halaman login
         return redirect()->to('/login');
     }
+
+    public function register()
+    {
+        $data = [];
+
+        // Jika formulir pendaftaran dikirim
+        if ($this->request->getMethod() === 'post') {
+            // Ambil data dari formulir
+            $nama = $this->request->getPost('nama');
+            $alamat = $this->request->getPost('alamat');
+            $noTelepon = $this->request->getPost('no_telepon');
+            $jenisKelamin = $this->request->getPost('jenis_kelamin');
+            $username = $this->request->getPost('username');
+            $password = $this->request->getPost('password');
+            $confirmPassword = $this->request->getPost('confirm_password');
+
+            // Validasi input menggunakan model
+            $userModel = new UserModel();
+            $validationErrors = $userModel->validateRegister($nama, $alamat, $noTelepon, $jenisKelamin, $username, $password, $confirmPassword);
+
+            if (empty($validationErrors)) {
+                // Semua validasi berhasil, lakukan pendaftaran
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                
+                $userData = [
+                    'nama' => $nama,
+                    'alamat' => $alamat,
+                    'jenis_kelamin' => $jenisKelamin,
+                    'no_telepon' => $noTelepon,
+                    'username' => $username,
+                    'password' => $hashedPassword,
+                    'role' => 'customer'
+                ];
+
+                $userModel->insert($userData);
+                session()->setFlashdata('success', 'Anda berhasil Daftar.');
+                return redirect()->to('/login'); // Ganti dengan halaman setelah login
+            } else {
+                $data['error'] = $validationErrors;
+            }
+        }
+
+        // Tampilkan halaman pendaftaran dengan pesan kesalahan jika ada
+      
+        return view('user/register', $data);
+    }
 }

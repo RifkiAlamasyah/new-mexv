@@ -13,7 +13,7 @@ $routes->get('/dashboard', 'UserController::dashboard');
 $routes->match(['get', 'post'], '/register', 'UserController::register');
 
 // product
-$routes->get('/product', 'Product::index');
+$routes->get('/product', 'ProductController::index');
 
 // end product
 

@@ -12,8 +12,7 @@ class UserModel extends Model
 
     public function validateLogin($username, $password)
     {
-        $user = $this->where('username', $username)->first();
-    
+        $user = $this->where('username', $username)->first();    
         // Menggunakan sha1 untuk memverifikasi password
     
         if ($user && sha1($password) === $user['password']) {

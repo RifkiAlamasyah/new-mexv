@@ -10,6 +10,7 @@ $routes->get('/users', 'UserController::index');
 $routes->match(['get', 'post'], '/login', 'UserController::login');
 $routes->get('/logout', 'UserController::logout');
 $routes->get('/dashboard', 'UserController::dashboard');
+$routes->match(['get', 'post'], '/register', 'UserController::register');
 
 
 

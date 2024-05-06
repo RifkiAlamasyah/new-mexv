@@ -71,4 +71,60 @@ class UserController extends BaseController
         // Redirect ke halaman login
         return redirect()->to('/login');
     }
+
+    public function register()
+    {
+       // Jika formulir disubmit
+       if ($this->request->getMethod() === 'post') {
+        // Ambil data dari formulir
+        $nama = $this->request->getPost('nama');
+        $alamat = $this->request->getPost('alamat');
+        $jenis_kelamin = $this->request->getPost('jenis_kelamin');
+        $no_telp = $this->request->getPost('no_telp');
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+
+        // Load helper validation
+        helper('form');
+
+        // Load validation library
+        $validation = \Config\Services::validation();
+
+        // Ambil aturan validasi dari konfigurasi Validasi
+        $config = new \Config\Validation();
+        $validation->setRules($config->userRegister, $config->validationMessages);
+        
+        // Menggunakan aturan validasi dan pesan kesalahan dari file konfigurasi Validation
+        if (!$validation->run($this->request->getPost())) {
+            // Jika validasi gagal, kembalikan ke halaman registrasi dengan pesan kesalahan
+            return redirect()->to('/register')->withInput()->with('errors', $validation->getErrors());
+        }
+        // Simpan data ke database
+        $userModel = new UserModel();
+
+        // Hash password sebelum disimpan
+        $hashedPassword = sha1($password);
+
+        // Data yang akan disimpan
+        $data = [
+            'nama' => $nama,
+            'alamat' => $alamat,
+            'jenis_kelamin' => $jenis_kelamin,
+            'telp' => $no_telp,
+            'username' => $username,
+             'role' => 'customer',
+            'password' => $hashedPassword // Simpan password yang sudah di-hash
+        ];
+
+        // Insert data ke dalam tabel user
+        $userModel->insert($data);
+
+        session()->setFlashdata('success', 'Anda berhasil daftar. Silahkan login.');
+        // Redirect ke halaman lain setelah berhasil menyimpan data
+        return redirect()->to('/login');
+    }
+
+    // Tampilkan halaman registrasi (formulir)
+    return view('user/register');
+    }
 }

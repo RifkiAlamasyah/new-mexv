@@ -12,13 +12,6 @@ class UserController extends BaseController
         helper('form'); // Memuat helper form
     }
 
-    public function index()
-    {
-        $userModel = new UserModel();
-        $data['users'] = $userModel->findAll();
-
-        return view('user/index', $data);
-    }
     public function login()
     {
         $data = [];
@@ -36,6 +29,7 @@ class UserController extends BaseController
                 session()->set('user_id', $user['id']);
                 session()->set('user_data', $user);
                 session()->setFlashdata('success', 'Anda berhasil Login.');
+                session()->set('isLoggedIn', true);
                 return redirect()->to('/dashboard'); // Ganti dengan halaman setelah login
             } else {
                 // Login gagal, tampilkan pesan error
@@ -66,6 +60,7 @@ class UserController extends BaseController
     public function logout()
     {
         // Membersihkan session
+        session()->remove('isLoggedIn');
         session()->destroy();
 
         // Redirect ke halaman login

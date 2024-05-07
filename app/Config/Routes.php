@@ -14,6 +14,8 @@ $routes->match(['get', 'post'], '/register', 'UserController::register');
 
 // product
 $routes->get('/product', 'ProductController::index');
+$routes->get('/product/manage-product', 'ProductController::manage_product');
+$routes->match(['get', 'post'], '/product/add', 'ProductController::add_product');
 
 // end product
 

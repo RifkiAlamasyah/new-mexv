@@ -51,6 +51,20 @@ class Validation extends BaseConfig
         'username' => 'required|is_unique[user.username]',
         'password' => 'required'
     ];
+    
+
+    public $addProduk = [
+        'kode_produk' => 'required',
+        'nama_produk' => 'required',
+        'harga_produk' => 'required',
+        'gambar_produk' => [
+            'uploaded[gambar_produk]',
+            'mime_in[gambar_produk,image/jpg,image/jpeg,image/png]', // Hanya izinkan tipe gambar tertentu
+            'max_size[gambar_produk,1024]' // Maksimal ukuran gambar 1MB
+        ],
+        'deskripsi_produk' => 'required',
+    ];
+  
 
     // Pesan kesalahan validasi
     public $validationMessages = [
@@ -74,6 +88,18 @@ class Validation extends BaseConfig
         'password' => [
             'required' => 'Kolom Password wajib diisi.'
         ]
+    ];
+
+    public $addMessages = [
+        'kode_produk' => [
+            'required' => 'Kolom Kode Produk wajib diisi.'
+        ],
+        'nama_produk' => [
+            'required' => 'Kolom Nama Produk wajib diisi.'
+        ],
+        'harga_produk' => [
+            'required' => 'Kolom Harga Produk wajib diisi.'
+        ],
     ];
 
 

@@ -29,7 +29,7 @@
     <div class="border border-2 rounded border-blue-300 p-5">
     <h1 class="text-lg font-bold mb-4">Tambah Produk</h1>
 
-    <form action="<?= base_url('/product/add') ?>" method="post" enctype="multipart/form-data">
+    <form action="<?= base_url('/product/add') ?>" method="post" enctype="multipart/form-data" class="add-form">
     <!-- Kode Produk -->
     <div class="mb-4">
         <label for="kode_produk" class="block text-sm font-medium text-gray-700">Kode Produk</label>
@@ -98,7 +98,31 @@
 
 <!-- Script JavaScript untuk pratinjau gambar -->
 <script>
-  function previewImage(input) {
+      document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.add-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Apakah Anda yakin ingin menambahkan produk ini?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Tambahkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });  
+
+       // Preview image
+       function previewImage(input) {
         var previewContainer = document.getElementById('preview-container');
         previewContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
@@ -126,6 +150,7 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+  
 </script>
 
 

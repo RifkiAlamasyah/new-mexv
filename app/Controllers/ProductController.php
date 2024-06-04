@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Controllers;
-
+use App\Models\UserModel;
 use App\Models\ProductModel;
+use App\Models\ProductManagingModel;
+use App\Models\TransactionalModel;
 
 class ProductController extends BaseController
 {
@@ -158,5 +160,79 @@ class ProductController extends BaseController
 
         // Redirect ke halaman manage product dengan pesan sukses
         return redirect()->to('product/manage-product')->with('success', 'Produk berhasil dihapus');
+    }
+
+    public function order($kode_product)
+    {
+    
+        // Ambil data produk berdasarkan ID
+        $productModel = new ProductModel();
+
+
+        $product = $productModel->where('kode_product', $kode_product)->first();
+
+        if (!$product) {
+            // Redirect atau tampilkan pesan error jika produk tidak ditemukan
+            return redirect()->back()->with('error', 'Produk tidak ditemukan.');
+        }
+
+  
+
+        // Ambil daftar ukuran yang tersedia dari model atau sumber data lainnya
+        $sizes = ['XL', 'XXL', 'M', 'L'];
+
+        // Ambil data pengguna yang sedang login
+        $userModel = new UserModel();
+        $user = $userModel->find(session()->get('user_id')); // Sesuaikan dengan session login Anda
+
+        // Kirim data produk, ukuran, dan pengguna ke view
+        $data = [
+            'product' => $product,
+            'sizes' => $sizes,
+            'user' => $user,
+        ];
+
+        // Tampilkan view order produk
+        return view('product/order_product', $data);
+    }
+
+    public function submitOrder()
+    {
+        $productModel = new ProductModel();
+
+        $userData = session()->get('user_data');
+        // Validasi input jika diperlukan
+
+        // Ambil data dari form
+        $productId = $this->request->getPost('product_id');
+        $tempProduct = $productModel->where('kode_product', $productId)->first();
+
+        $selectedSize = $this->request->getPost('ukuran');
+        $quantity = $this->request->getPost('quantity');
+
+        $total_bayar = $tempProduct['harga_product'] * $quantity;
+        $selectedColor = $this->request->getPost('warna');
+        $metodePembayaran = $this->request->getPost('metode_pembayaran');
+
+        // Hitung total harga jika diperlukan
+
+        // Simpan data transaksi produk ke dalam database
+        $transactionalProductModel = new TransactionalModel();
+        $transactionalProductModel->save([
+            'nama_produk' => $tempProduct['nama_product'], // Ganti dengan nama produk jika perlu
+            'warna' => $selectedColor,
+            'ukuran' => $selectedSize,
+            'quantity' => $quantity,
+            'pembeli' => $userData['nama'],
+            'alamat' => $userData['alamat'],
+            'metode_bayar' => $metodePembayaran,
+            'total_harga' => $total_bayar,
+            'user_login' => $userData['username'],
+            'status' => '0',
+            'gambar_product' => $tempProduct['gambar_product'],
+        ]);
+
+        // Redirect ke halaman terima kasih atau halaman lain jika diperlukan
+        return redirect()->to('/dashboard')->with('success', 'Pesanan Anda berhasil disimpan. Silahkan Chek di menu Kelola Pesanan untuk melakukan Konfirmasi');
     }
 }

@@ -7,7 +7,7 @@
 <?php if (session()->getFlashdata('success')): ?>
     <!-- Tampilkan pesan selamat datang -->
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-        <h1 class="font-bold">Selamat datang <?= $user['nama']?></h1>
+        <h1 class="font-bold"><?= session()->getFlashdata('success') ?></h1>
     </div>
 <?php endif; ?>
 
@@ -29,7 +29,7 @@
             <img src="https://via.placeholder.com/300" alt="Order Pesanan" class="w-full h-32 object-cover">
         </a>
         <!-- Card 2: Kelola Pesanan -->
-        <a href="<?= base_url('manage') ?>" class="bg-white shadow rounded-lg p-6 flex flex-col justify-between hover:bg-gray-100 transition duration-300 ease-in-out">
+        <a href="<?= base_url('/cart') ?>" class="bg-white shadow rounded-lg p-6 flex flex-col justify-between hover:bg-gray-100 transition duration-300 ease-in-out">
             <h2 class="text-lg font-semibold mb-4">Kelola Pesanan</h2>
             <!-- Gambar dummy untuk Kelola Pesanan -->
             <img src="https://via.placeholder.com/300" alt="Kelola Pesanan" class="w-full h-32 object-cover">

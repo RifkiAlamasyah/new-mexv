@@ -18,6 +18,11 @@ $routes->get('/product/manage-product', 'ProductController::manage_product');
 $routes->match(['get', 'post'], '/product/add', 'ProductController::add_product');
 $routes->match(['get', 'post'], '/product/update/(:num)', 'ProductController::update_product/$1');
 $routes->match(['get', 'post', 'delete'], '/product/delete/(:num)', 'ProductController::delete_product/$1');
+$routes->get('product/order/(:any)', 'ProductController::order/$1');
+$routes->post('product/submit-order', 'ProductController::submitOrder');
+$routes->get('/cart', 'CartController::index');
+
+
 
 // end product
 

@@ -230,6 +230,7 @@ class ProductController extends BaseController
             'user_login' => $userData['username'],
             'status' => '0',
             'gambar_product' => $tempProduct['gambar_product'],
+            'telp' => $userData['telp']
         ]);
 
         // Redirect ke halaman terima kasih atau halaman lain jika diperlukan

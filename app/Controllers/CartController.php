@@ -18,11 +18,53 @@ class CartController extends Controller
         }
         
         $transactionalModel = new TransactionalModel();
-        $transactions = $transactionalModel->where('user_login', $userData['username'])->findAll();
+        $transactions = $transactionalModel->getTransactionsWithStatus($userData['username']);
         
         return view('cart/index', [
             'transactions' => $transactions,
             'userData' => $userData
         ]);
+    }
+    public function confirmOrder($id)
+    {
+        $transactionalProductModel = new TransactionalModel();
+        $transaction = $transactionalProductModel->find($id);
+
+        return view('cart/confirm', [
+            'transaction' => $transaction,
+        ]);
+    }
+
+    public function updateOrder()
+    {
+        $transactionalProductModel = new TransactionalModel();
+        
+        $id = $this->request->getPost('id');
+        $name = $this->request->getPost('pembeli');
+        $address = $this->request->getPost('alamat');
+        $telp = $this->request->getPost('telp');
+
+        // Generate ticket_transaksi
+        $ticket_transaksi = 'MEXV_TRX_' . strtoupper(uniqid());
+
+
+
+        $transactionalProductModel->update($id, [
+            'pembeli' => $name,
+            'alamat' => $address,
+            'telp' => $telp,
+            'status' => '1' ,// Update status menjadi '1' (Confirmed)
+            'ticket_transaksi' => $ticket_transaksi
+        ]);
+
+        return redirect()->to('/cart')->with('success', 'Pesanan Anda berhasil dikonfirmasi.');
+    }
+
+    public function cancelOrder($id)
+    {
+        $transactionalProductModel = new TransactionalModel();
+        $transactionalProductModel->delete($id);
+
+        return redirect()->to('/cart')->with('success', 'Pesanan Anda berhasil dibatalkan.');
     }
 }

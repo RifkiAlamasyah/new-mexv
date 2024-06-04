@@ -19,6 +19,16 @@ class TransactionalModel extends Model
         'total_harga',
         'user_login',
         'status',
-        'gambar_product'
+        'gambar_product',
+        'telp',
+        'ticket_transaksi'
     ];
+
+    public function getTransactionsWithStatus($username)
+    {
+        return $this->select('transactional_product.*, mapping_status.keterangan as status_description')
+                    ->join('mapping_status', 'transactional_product.status = mapping_status.id')
+                    ->where('transactional_product.user_login', $username)
+                    ->findAll();
+    }
 }

@@ -20,11 +20,13 @@ $routes->match(['get', 'post'], '/product/update/(:num)', 'ProductController::up
 $routes->match(['get', 'post', 'delete'], '/product/delete/(:num)', 'ProductController::delete_product/$1');
 $routes->get('product/order/(:any)', 'ProductController::order/$1');
 $routes->post('product/submit-order', 'ProductController::submitOrder');
-$routes->get('/cart', 'CartController::index');
-
-
-
 // end product
+
+// Transaction
+$routes->get('cart', 'CartController::index');
+$routes->get('cart/confirm/(:num)', 'CartController::confirmOrder/$1');
+$routes->post('cart/update-order', 'CartController::updateOrder');
+$routes->get('cart/cancel-order/(:num)', 'CartController::cancelOrder/$1');
 
 
 

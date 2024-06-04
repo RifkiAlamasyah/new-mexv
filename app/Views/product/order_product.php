@@ -51,8 +51,8 @@
                 <div>
                     <label for="metode_pembayaran" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
                     <select id="metode_pembayaran" name="metode_pembayaran" class="block w-full mt-1 p-2 border border-gray-300 rounded-md">
-                        <option value="transfer_bank">Transfer Bank</option>
-                        <option value="cod">COD</option>
+                        <option value="Transfer Bank">Transfer Bank</option>
+                        <option value="COD">COD</option>
                     </select>
                 </div>
 

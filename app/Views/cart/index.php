@@ -20,7 +20,19 @@
                 <p class="text-gray-600">Ukuran: <?= $transaction['ukuran'] ?></p>
                 <p class="text-gray-600">Kuantitas: <?= $transaction['quantity'] ?></p>
                 <p class="text-gray-600">Total Harga: <?= $transaction['total_harga'] ?></p>
-                <p class="text-gray-600">Status: <?= $transaction['status'] == '0' ? 'Pending' : 'Completed' ?></p>
+                <p class="text-gray-600">Metode Pembayaran: <?= $transaction['metode_bayar'] ?></p>
+                <p class="text-gray-600">Status: <?= $transaction['status_description'] ?></p>
+                <?php if ($transaction['status'] == '1'): ?>
+                    <p class="text-gray-600">Ticket Transaksi: <?= $transaction['ticket_transaksi'] ?></p>
+                <?php endif; ?>
+
+                <!-- Tombol konfirmasi dan batalkan -->
+                <div class="flex space-x-2 mt-4">
+                <?php if ($transaction['status'] == '0'): ?>
+                        <a href="<?= base_url('cart/confirm/'.$transaction['id']) ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Konfirmasi</a>
+                        <a href="<?= base_url('cart/cancel-order/'.$transaction['id']) ?>" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">Batalkan</a>
+                <?php endif; ?>
+                </div>
             </div>
         <?php endforeach; ?>
     </div>

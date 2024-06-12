@@ -64,6 +64,11 @@ class Validation extends BaseConfig
         ],
         'deskripsi_produk' => 'required',
     ];
+
+    public $orderProduk = [
+        'quantity' => 'required',
+        'ukuran' => 'required'
+    ];
   
 
     // Pesan kesalahan validasi

@@ -31,7 +31,7 @@
   </style>
 </head>
 
-<body>
+<body class="bg-gray-100">
 <?= view('components/navbar'); ?>
 <?= $this->renderSection('content') ?>
 <?= view('components/footer'); ?>

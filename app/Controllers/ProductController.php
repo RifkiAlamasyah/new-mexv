@@ -164,7 +164,14 @@ class ProductController extends BaseController
 
     public function order($kode_product)
     {
-    
+          // Periksa apakah pengguna sudah login
+     if (!session()->has('user_id')) {
+            // Set flashdata untuk pesan error
+       session()->setFlashdata('error', 'Anda harus login terlebih dahulu.');
+       // Redirect ke halaman login
+       return redirect()->to('/login');// Redirect ke halaman login jika belum login
+       }
+
         // Ambil data produk berdasarkan ID
         $productModel = new ProductModel();
 
@@ -202,10 +209,24 @@ class ProductController extends BaseController
 
         $userData = session()->get('user_data');
         // Validasi input jika diperlukan
+        $validation = \Config\Services::validation();
 
-        // Ambil data dari form
+        // Ambil aturan validasi dari konfigurasi Validasi
+        $config = new \Config\Validation();
+        $validation->setRules($config->orderProduk);
+         // Ambil data dari form
         $productId = $this->request->getPost('product_id');
         $tempProduct = $productModel->where('kode_product', $productId)->first();
+
+       
+        // Menggunakan aturan validasi dan pesan kesalahan dari file konfigurasi Validation
+        if (!$validation->withRequest($this->request)->run()) {
+            // Jika validasi gagal, kembalikan ke halaman pemesanan dengan pesan kesalahan
+            return redirect()->to('product/order/' . $tempProduct['kode_product'])
+                             ->withInput()
+                             ->with('errors', $validation->getErrors());
+        }
+   
 
         $selectedSize = $this->request->getPost('ukuran');
         $quantity = $this->request->getPost('quantity');
@@ -235,5 +256,72 @@ class ProductController extends BaseController
 
         // Redirect ke halaman terima kasih atau halaman lain jika diperlukan
         return redirect()->to('/dashboard')->with('success', 'Pesanan Anda berhasil disimpan. Silahkan Chek di menu Kelola Pesanan untuk melakukan Konfirmasi');
+    }
+
+    public function cart()
+    {
+        $session = session();
+        $userData = $session->get('user_data');
+        // Pastikan data pengguna disimpan dalam sesi
+        
+        if (!$userData) {
+            return redirect()->to('/login'); // Redirect jika pengguna belum login
+        }
+        
+        $transactionalModel = new TransactionalModel();
+        $transactions = $transactionalModel->getTransactionsWithStatus($userData['username']);
+        
+        return view('cart/index', [
+            'transactions' => $transactions,
+            'userData' => $userData
+        ]);
+    }
+
+    public function confirmOrder($id)
+    {
+        $transactionalProductModel = new TransactionalModel();
+        $transaction = $transactionalProductModel->find($id);
+
+        return view('cart/confirm', [
+            'transaction' => $transaction,
+        ]);
+    }
+
+    public function updateOrder()
+    {
+        $transactionalProductModel = new TransactionalModel();
+        
+        $id = $this->request->getPost('id');
+        $name = $this->request->getPost('pembeli');
+        $address = $this->request->getPost('alamat');
+        $telp = $this->request->getPost('telp');
+
+        // Generate ticket_transaksi
+        $ticket_transaksi = 'MEXV_TRX_' . strtoupper(uniqid());
+
+
+
+        $transactionalProductModel->update($id, [
+            'pembeli' => $name,
+            'alamat' => $address,
+            'telp' => $telp,
+            'status' => '1' ,
+            'ticket_transaksi' => $ticket_transaksi
+        ]);
+
+        return redirect()->to('/cart')->with('success', 'Pesanan Anda berhasil dikonfirmasi.');
+    }
+
+    public function cancelOrder($id)
+    {
+        $transactionalProductModel = new TransactionalModel();
+        $transactionalProductModel->delete($id);
+
+        return redirect()->to('/cart')->with('success', 'Pesanan Anda berhasil dibatalkan.');
+    }
+
+    public function manage_product_order()
+    {
+        return view('product/manage_product_order');
     }
 }

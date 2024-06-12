@@ -4,7 +4,7 @@
 <!-- section content -->
 <?= $this->section('content') ?>
 
-<section class="p-8 bg-gray-300">
+<section class="p-8">
  <div class="bg-white p-8 rounded">
  <nav class="text-sm pb-5" aria-label="Breadcrumb">
     <ol class="list-none p-0 inline-flex">

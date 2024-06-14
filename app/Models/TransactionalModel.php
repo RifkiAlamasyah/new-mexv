@@ -31,4 +31,12 @@ class TransactionalModel extends Model
                     ->where('transactional_product.user_login', $username)
                     ->findAll();
     }
+
+    public function getTransactionsWithStatusOrder()
+    {
+        return $this->select('transactional_product.*, mapping_status.keterangan as status_description')
+                    ->join('mapping_status', 'transactional_product.status = mapping_status.id')
+                    ->where('transactional_product.status !=', 0)
+                    ->findAll();
+    }
 }

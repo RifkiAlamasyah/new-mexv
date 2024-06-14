@@ -5,6 +5,7 @@ use App\Models\UserModel;
 use App\Models\ProductModel;
 use App\Models\ProductManagingModel;
 use App\Models\TransactionalModel;
+use App\Models\MappingStatusOrderModel;
 
 class ProductController extends BaseController
 {
@@ -29,10 +30,10 @@ class ProductController extends BaseController
     public function manage_product(): string
     {
              // Buat objek model ProductModel
-             $model = new ProductModel();
+             $productModel = new ProductModel();
 
              // Ambil semua data produk dari model
-             $data['products'] = $model->findAll();
+             $data['products'] = $productModel->findAll();
 
             return view('product/manage_product', $data);
     }
@@ -71,7 +72,7 @@ class ProductController extends BaseController
               'nama_product' => $this->request->getPost('nama_produk'),
               'harga_product' => $this->request->getPost('harga_produk'),
               'gambar_product' => $gambarProduk->getName(), // Simpan nama file gambar ke database
-              'deskripsi_product' => intval($this->request->getPost('deskripsi_produk')),
+              'deskripsi_product' => $this->request->getPost('deskripsi_produk'),
               'discount_product' => $discountProduct
           ];
         
@@ -177,6 +178,7 @@ class ProductController extends BaseController
 
 
         $product = $productModel->where('kode_product', $kode_product)->first();
+        
 
         if (!$product) {
             // Redirect atau tampilkan pesan error jika produk tidak ditemukan
@@ -206,19 +208,21 @@ class ProductController extends BaseController
     public function submitOrder()
     {
         $productModel = new ProductModel();
-
+        $transactionalProductModel = new TransactionalModel();
+    
         $userData = session()->get('user_data');
+    
         // Validasi input jika diperlukan
         $validation = \Config\Services::validation();
-
+    
         // Ambil aturan validasi dari konfigurasi Validasi
         $config = new \Config\Validation();
         $validation->setRules($config->orderProduk);
-         // Ambil data dari form
+    
+        // Ambil data dari form
         $productId = $this->request->getPost('product_id');
         $tempProduct = $productModel->where('kode_product', $productId)->first();
-
-       
+    
         // Menggunakan aturan validasi dan pesan kesalahan dari file konfigurasi Validation
         if (!$validation->withRequest($this->request)->run()) {
             // Jika validasi gagal, kembalikan ke halaman pemesanan dengan pesan kesalahan
@@ -226,21 +230,28 @@ class ProductController extends BaseController
                              ->withInput()
                              ->with('errors', $validation->getErrors());
         }
-   
-
+    
+        // Pengecekan jumlah order dengan status 0
+        $pendingOrdersCount = $transactionalProductModel->where([
+            'user_login' => $userData['username'],
+            'status' => '0'
+        ])->countAllResults();
+    
+        if ($pendingOrdersCount >= 5) {
+            // Jika jumlah order dengan status 0 lebih dari atau sama dengan 5, kembalikan ke halaman pemesanan dengan pesan kesalahan
+            return redirect()->to('product/order/' . $tempProduct['kode_product'])
+                             ->with('error', 'Harap konfirmasi terlebih dahulu orderan Anda yang belum diproses. Batas maksimal adalah 5 orderan belum diproses.');
+        }
+    
         $selectedSize = $this->request->getPost('ukuran');
         $quantity = $this->request->getPost('quantity');
-
         $total_bayar = $tempProduct['harga_product'] * $quantity;
         $selectedColor = $this->request->getPost('warna');
         $metodePembayaran = $this->request->getPost('metode_pembayaran');
-
-        // Hitung total harga jika diperlukan
-
+    
         // Simpan data transaksi produk ke dalam database
-        $transactionalProductModel = new TransactionalModel();
         $transactionalProductModel->save([
-            'nama_produk' => $tempProduct['nama_product'], // Ganti dengan nama produk jika perlu
+            'nama_produk' => $tempProduct['nama_product'],
             'warna' => $selectedColor,
             'ukuran' => $selectedSize,
             'quantity' => $quantity,
@@ -253,10 +264,11 @@ class ProductController extends BaseController
             'gambar_product' => $tempProduct['gambar_product'],
             'telp' => $userData['telp']
         ]);
-
+    
         // Redirect ke halaman terima kasih atau halaman lain jika diperlukan
-        return redirect()->to('/dashboard')->with('success', 'Pesanan Anda berhasil disimpan. Silahkan Chek di menu Kelola Pesanan untuk melakukan Konfirmasi');
+        return redirect()->to('/dashboard')->with('success', 'Pesanan Anda berhasil disimpan. Silahkan cek di menu Kelola Pesanan untuk melakukan konfirmasi.');
     }
+    
 
     public function cart()
     {
@@ -322,6 +334,65 @@ class ProductController extends BaseController
 
     public function manage_product_order()
     {
-        return view('product/manage_product_order');
+        // Instansiasi model
+        $transactionalProductionModel = new TransactionalModel();
+        $mappingStatusModel = new MappingStatusOrderModel();
+    
+        // Ambil data transaksi dengan status tertentu
+        $data['transactions'] = $transactionalProductionModel->getTransactionsWithStatusOrder();
+    
+        // Ambil semua status yang tersedia
+        $data['statuses'] = $mappingStatusModel->findAll();
+    
+        // Inisialisasi array untuk menyimpan jumlah order per bulan
+        $orderCounts = [];
+        foreach ($data['transactions'] as $transaction) {
+            $month = date('F', strtotime($transaction['created_at']));
+            if (!isset($orderCounts[$month])) {
+                $orderCounts[$month] = 0;
+            }
+            $orderCounts[$month]++;
+        }
+    
+        // Ambil nama-nama bulan untuk chart labels
+        $data['months'] = array_keys($orderCounts);
+        
+        // Masukkan $orderCounts ke dalam $data
+        $data['orderCounts'] = $orderCounts;
+    
+        // Kirim data ke view
+        return view('product/manage_product_order', $data);
+    }
+
+    public function update_status_order($transactionId)
+    {
+        $transactionalProductionModel = new TransactionalModel();
+        $mappingStatusModel = new MappingStatusOrderModel();
+
+        // Ambil data transaksi berdasarkan $transactionId
+        $transaction = $transactionalProductionModel->find($transactionId);
+
+        if (!$transaction) {
+            // Jika transaksi tidak ditemukan, redirect dengan flash message
+            return redirect()->to(base_url('product/manage-product-order'))->with('error', 'Transaksi tidak ditemukan.');
+        }
+
+        // Ambil data status dari form
+        $no_order = $this->request->getPost('ticket_transaksi');
+        $newStatus = $this->request->getPost('status');
+
+        // Validasi apakah status yang diambil ada di database
+        $status = $mappingStatusModel->find($newStatus);
+
+        if (!$status) {
+            // Jika status tidak ditemukan, redirect dengan flash message
+            return redirect()->to(base_url('product/manage-product-order'))->with('error', 'Status tidak valid.');
+        }
+
+        // Lakukan update status
+        $transactionalProductionModel->update($transactionId, ['status' => $newStatus]);
+
+        // Redirect dengan flash message
+        return redirect()->to(base_url('product/manage-product-order'))->with('success', 'Status transaksi No Order : <strong>'.$no_order.'</strong> berhasil diperbarui.');
     }
 }

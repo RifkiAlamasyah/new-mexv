@@ -44,7 +44,9 @@
                         <div class="flex space-x-2 mt-4">
                             <?php if ($transaction['status'] == '0'): ?>
                                 <a href="<?= base_url('cart/confirm/'.$transaction['id']) ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Konfirmasi</a>
-                                <a href="<?= base_url('cart/cancel-order/'.$transaction['id']) ?>" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">Batalkan</a>
+                                <button onclick="confirmCancel(<?= $transaction['id'] ?>)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Batalkan
+                                </button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -57,4 +59,48 @@
     </section>
 </div>
 
+<script>  
+    // Definisikan fungsi confirmCancel di luar DOMContentLoaded
+    function confirmCancel(transactionId) {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Batalkan',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect or submit form here
+                window.location.href = '<?= base_url('cart/cancel-order/') ?>' + transactionId;
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Cek apakah ada flash data dengan pesan sukses
+        const successMessage = '<?= session()->getFlashdata('success') ?>';
+        if (successMessage) {
+            // Tampilkan SweetAlert dengan pesan sukses
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: successMessage
+            });
+        }
+
+        // Cek apakah ada flash data dengan pesan error
+        const errorMessage = '<?= session()->getFlashdata('error') ?>';
+        if (errorMessage) {
+            // Tampilkan SweetAlert dengan pesan error
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+            });
+        }
+    });
+</script>
 <?= $this->endSection() ?>

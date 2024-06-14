@@ -60,7 +60,7 @@ class Validation extends BaseConfig
         'gambar_produk' => [
             'uploaded[gambar_produk]',
             'mime_in[gambar_produk,image/jpg,image/jpeg,image/png]', // Hanya izinkan tipe gambar tertentu
-            'max_size[gambar_produk,1024]' // Maksimal ukuran gambar 1MB
+            'max_size[gambar_produk,5024]' // Maksimal ukuran gambar 5MB
         ],
         'deskripsi_produk' => 'required',
     ];

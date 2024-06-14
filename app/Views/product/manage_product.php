@@ -45,20 +45,26 @@
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-            <?php foreach ($products as $product): ?>
+            <?php if (empty($products)): ?>
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap"><?= $product['nama_product'] ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap"><?= $product['harga_product'] ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap"><?= $product['discount_product'] == 0 ? '-' : $product['discount_product'] . '%' ?></td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <a href="<?= base_url('product/update/' . $product['id']) ?>" class="text-indigo-600 hover:text-indigo-900">Ubah</a>
-                        <form action="<?= base_url('product/delete/' . $product['id']) ?>" method="post" class="inline delete-form">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="text-red-600 hover:text-red-900 ml-2">Delete</button>
-                        </form>
-                    </td>
+                    <td colspan="4" class="px-6 py-4 text-center text-red-600">Tidak ada Data</td>
                 </tr>
-            <?php endforeach; ?>
+            <?php else: ?>
+                <?php foreach ($products as $product): ?>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><?= $product['nama_product'] ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><?= $product['harga_product'] ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap"><?= $product['discount_product'] == 0 ? '-' : $product['discount_product'] . '%' ?></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="<?= base_url('product/update/' . $product['id']) ?>" class="text-indigo-600 hover:text-indigo-900">Ubah</a>
+                            <form action="<?= base_url('product/delete/' . $product['id']) ?>" method="post" class="inline delete-form">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="text-red-600 hover:text-red-900 ml-2">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </tbody>
     </table>
     </div>

@@ -25,7 +25,7 @@
                     <div class="mt-2 space-x-4">
                         <?php foreach ($sizes as $size): ?>
                             <label class="inline-flex items-center">
-                                <input type="radio" name="ukuran" value="<?= $size ?>" class="form-radio text-indigo-600" require>
+                                <input type="radio" name="ukuran" value="<?= $size ?>" class="form-radio text-indigo-600" required>
                                 <span class="ml-2 text-gray-700"><?= $size ?></span>
                             </label>
                         <?php endforeach; ?>
@@ -47,7 +47,7 @@
                 <!-- Select untuk warna -->
                 <div>
                     <label for="warna" class="block text-sm font-medium text-gray-700">Warna</label>
-                    <select id="warna" name="warna" class="block w-full mt-1 p-2 border border-gray-300 rounded-md" require>
+                    <select id="warna" name="warna" class="block w-full mt-1 p-2 border border-gray-300 rounded-md" required>
                         <option value="hitam">Hitam</option>
                         <option value="silver">Silver</option>
                     </select>
@@ -59,7 +59,7 @@
                 <!-- Input untuk metode pembayaran -->
                 <div>
                     <label for="metode_pembayaran" class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
-                    <select id="metode_pembayaran" name="metode_pembayaran" class="block w-full mt-1 p-2 border border-gray-300 rounded-md" require>
+                    <select id="metode_pembayaran" name="metode_pembayaran" class="block w-full mt-1 p-2 border border-gray-300 rounded-md" required>
                         <option value="Transfer Bank">Transfer Bank</option>
                         <option value="COD">COD</option>
                     </select>
@@ -73,5 +73,21 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Cek apakah ada flash data dengan pesan error
+        const errorMessage = '<?= session()->getFlashdata('error') ?>';
+        if (errorMessage) {
+            // Tampilkan SweetAlert dengan pesan error
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+            });
+        }
+    });
+</script>
 
 <?= $this->endSection() ?>

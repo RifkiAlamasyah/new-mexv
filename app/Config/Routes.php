@@ -28,5 +28,6 @@ $routes->get('cart/confirm/(:num)', 'ProductController::confirmOrder/$1');
 $routes->post('cart/update-order', 'ProductController::updateOrder');
 $routes->get('cart/cancel-order/(:num)', 'ProductController::cancelOrder/$1');
 $routes->get('/product/manage-product-order', 'ProductController::manage_product_order');
+$routes->post('/product/update-status-order/(:num)', 'ProductController::update_status_order/$1');
 
 

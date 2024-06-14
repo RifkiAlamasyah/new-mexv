@@ -12,6 +12,11 @@
                 <h1 class="font-bold"><?= session()->getFlashdata('success') ?></h1>
             </div>
         <?php endif; ?>
+        <?php if (session()->getFlashdata('error')) : ?>
+            <div class=" p-4 mb-4 mt-2 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
+                <span class="block sm:inline"><?= session()->getFlashdata('error') ?></span>
+            </div>
+        <?php endif; ?>
         <h1 class="text-3xl font-semibold mb-4">Hallo <?= $user['nama']; ?></h1>
         <!-- Konten dashboard lainnya -->
         <p class="text-lg">Selamat datang di dashboard Anda. Ini adalah tempat di mana Anda dapat melihat informasi penting tentang akun Anda dan mengelola pesanan Anda.</p>

@@ -290,7 +290,20 @@ class ProductController extends BaseController
     }
 
     public function confirmOrder($id)
-    {
+    {        // Periksa apakah pengguna telah masuk
+        if (!session()->has('user_data')) {
+            // Alihkan ke halaman login jika pengguna belum masuk
+            return redirect()->to('/login')->with('error', 'Anda harus masuk untuk mengakses halaman ini.');
+        }
+
+        // Ambil data pengguna dari session
+        $userData = session()->get('user_data');
+
+        // Periksa apakah pengguna memiliki peran admin
+        if ($userData['role'] !== 'customer') {
+            // Alihkan ke halaman dashboard atau tampilkan pesan kesalahan jika bukan admin
+            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
         $transactionalProductModel = new TransactionalModel();
         $transaction = $transactionalProductModel->find($id);
 
@@ -326,6 +339,20 @@ class ProductController extends BaseController
 
     public function cancelOrder($id)
     {
+        // Periksa apakah pengguna telah masuk
+        if (!session()->has('user_data')) {
+            // Alihkan ke halaman login jika pengguna belum masuk
+            return redirect()->to('/login')->with('error', 'Anda harus masuk untuk mengakses halaman ini.');
+        }
+
+        // Ambil data pengguna dari session
+        $userData = session()->get('user_data');
+
+        // Periksa apakah pengguna memiliki peran admin
+        if ($userData['role'] !== 'customer') {
+            // Alihkan ke halaman dashboard atau tampilkan pesan kesalahan jika bukan admin
+            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
         $transactionalProductModel = new TransactionalModel();
         $transactionalProductModel->delete($id);
 
@@ -334,6 +361,21 @@ class ProductController extends BaseController
 
     public function manage_product_order()
     {
+
+         // Periksa apakah pengguna telah masuk
+        if (!session()->has('user_data')) {
+            // Alihkan ke halaman login jika pengguna belum masuk
+            return redirect()->to('/login')->with('error', 'Anda harus masuk untuk mengakses halaman ini.');
+        }
+
+        // Ambil data pengguna dari session
+        $userData = session()->get('user_data');
+
+        // Periksa apakah pengguna memiliki peran admin
+        if ($userData['role'] !== 'admin') {
+            // Alihkan ke halaman dashboard atau tampilkan pesan kesalahan jika bukan admin
+            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
         // Instansiasi model
         $transactionalProductionModel = new TransactionalModel();
         $mappingStatusModel = new MappingStatusOrderModel();

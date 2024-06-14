@@ -15,6 +15,11 @@
                 <span class="block sm:inline"><?= session()->getFlashdata('success') ?></span>
             </div>
         <?php endif; ?>
+        <?php if (session()->getFlashdata('error')) : ?>
+            <div class=" p-4 mb-4 mt-2 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
+                <span class="block sm:inline"><?= session()->getFlashdata('error') ?></span>
+            </div>
+        <?php endif; ?>
         <?= form_open('/login'); ?>
         <div class="mb-5">
             <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
